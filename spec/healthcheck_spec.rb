@@ -5,7 +5,7 @@ describe GuOP do
     context "when called with a valid api-key" do
       before(:all) do
         @guop = GuOP.new($VALID_API_KEY)
-        @response = @guop.request(:get, "/")
+        @response = @guop.get("/")
       end
 
       it "returns a 200 response code" do
@@ -41,7 +41,7 @@ describe GuOP do
 
     context "when called with invalid api-key" do
       it "returns a 403 response code" do
-        response = GuOP.new(SecureRandom.uuid).request(:get, "/")
+        response = GuOP.new(SecureRandom.uuid).get("/")
         expect(response.code).to eq 403
       end
     end

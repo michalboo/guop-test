@@ -16,4 +16,12 @@ class GuOP
     opts[:query] = opts[:query] ? default.merge(opts[:query]) : default
     self.class.send(request_method, endpoint, opts)
   end
+
+  def method_missing(method_name, *args, &block)
+    if HTTParty.respond_to? method_name
+      request(method_name, *args)
+    else
+      raise NoMethodError("Undefined method #{method_name}")
+    end
+  end
 end
