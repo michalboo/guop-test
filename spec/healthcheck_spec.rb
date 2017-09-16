@@ -14,7 +14,7 @@ describe GuOP do
 
       it "returns valid json adhering to the 'healthcheck' schema" do
         expect{ JSON.parse @response.body }.not_to raise_error
-        expect(@response.body).to match_response_schema("healthcheck")
+        expect(@response.body).to match_schema("healthcheck")
       end
 
       it "reports an 'ok' status" do
