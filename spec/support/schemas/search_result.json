@@ -1,0 +1,95 @@
+{
+  "type": "object",
+  "required": [
+    "response"
+  ],
+  "properties": {
+    "response": {
+      "type": "object",
+      "required": [
+        "status",
+        "userTier",
+        "total",
+        "startIndex",
+        "pageSize",
+        "currentPage",
+        "pages",
+        "orderBy",
+        "results"
+      ],
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "userTier": {
+          "type": "string"
+        },
+        "total": {
+          "type": "integer"
+        },
+        "startIndex": {
+          "type": "integer"
+        },
+        "pageSize": {
+          "type": "integer"
+        },
+        "currentPage": {
+          "type": "integer"
+        },
+        "pages": {
+          "type": "integer"
+        },
+        "orderBy": {
+          "type": "string"
+        },
+        "results": {
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "sectionId",
+              "sectionName",
+              "webPublicationDate",
+              "webTitle",
+              "webUrl",
+              "apiUrl"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "sectionId": {
+                "type": "string"
+              },
+              "sectionName": {
+                "type": "string"
+              },
+              "webPublicationDate": {
+                "type": "string"
+              },
+              "webTitle": {
+                "type": "string"
+              },
+              "webUrl": {
+                "type": "string"
+              },
+              "apiUrl": {
+                "type": "string"
+              },
+              "isHosted": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
