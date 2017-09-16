@@ -15,7 +15,7 @@ describe GuOP do
       expect(@response.code).to eq 200
     end
 
-    it "returns valid json adhering to the 'search_result' schema" do
+    it "returns valid JSON adhering to the 'search_result' schema" do
       expect{ JSON.parse @response.body }.not_to raise_error
       expect(@response.body).to match_schema("search_result")
     end

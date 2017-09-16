@@ -12,7 +12,7 @@ describe GuOP do
         expect(@response.code).to eq 200
       end
 
-      it "returns valid json adhering to the 'healthcheck' schema" do
+      it "returns valid JSON adhering to the 'healthcheck' schema" do
         expect{ JSON.parse @response.body }.not_to raise_error
         expect(@response.body).to match_schema("healthcheck")
       end
