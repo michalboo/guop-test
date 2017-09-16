@@ -4,19 +4,16 @@ class GuOP
   include HTTParty
 
   base_uri "http://content.guardianapis.com"
-  # debug_output $stdout
+  debug_output $stdout if ENV["VERBOSE"] == "true"
 
   def initialize(api_key)
     @api_key = api_key
   end
 
-  def healthcheck
-    # Healthcheck endpoint appears to live under "/"
-    api_request(:get, "/")
-  end
-
-  private
-  def api_request(request_method = :get, endpoint = "/")
-    self.class.send(request_method, endpoint, { query: { "api-key" => @api_key }})
+  def request(request_method, endpoint, opts = {})
+    # apply default api-key
+    default = { "api-key" => @api_key }
+    opts[:query] = opts[:query] ? default.merge(opts[:query]) : default
+    self.class.send(request_method, endpoint, opts)
   end
 end
