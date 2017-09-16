@@ -12,11 +12,11 @@ class GuOP
 
   def healthcheck
     # Healthcheck endpoint appears to live under "/"
-    guop_request(:get, "/")
+    api_request(:get, "/")
   end
 
   private
-  def guop_request(request_method = :get, endpoint = "/")
+  def api_request(request_method = :get, endpoint = "/")
     self.class.send(request_method, endpoint, { query: { "api-key" => @api_key }})
   end
 end

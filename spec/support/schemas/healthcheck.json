@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "required": [
+    "response"
+  ],
+  "properties": {
+    "response": {
+      "type": "object",
+      "required": [
+        "status",
+        "userTier",
+        "total"
+      ],
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "userTier": {
+          "type": "string"
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

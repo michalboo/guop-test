@@ -8,7 +8,7 @@ describe GuOP do
   end
 
   describe "#status" do
-    context "when called with valid api-key" do
+    context "when called with a valid api-key" do
       before(:all) do
         @guop = GuOP.new($VALID_API_KEY)
         @response = @guop.healthcheck
@@ -18,12 +18,24 @@ describe GuOP do
         expect(@response.code).to eq 200
       end
 
-      it "includes API status information in the response body" do
-        expect(@response.parsed_response["response"]).to be_instance_of Hash
-        expect(@response.parsed_response["response"].keys).to include "status"
+      it "returns valid json adhering to the 'healthcheck' schema" do
+        expect{ JSON.parse @response.body }.not_to raise_error
+        expect(@response.body).to match_response_schema("healthcheck")
+      end
+
+      it "reports an 'ok' status" do
         expect(@response.parsed_response["response"]["status"]).to eq "ok"
+      end
+
+      it "includes rate limiting information in the response headers" do
+        ratelimit_headers = [
+          "x-ratelimit-limit-day",
+          "x-ratelimit-limit-minute",
+          "x-ratelimit-remaining-day",
+          "x-ratelimit-remaining-minute"
+        ]
+        expect(@response.headers).to include *ratelimit_headers
       end
     end
   end
-
 end
