@@ -5,7 +5,7 @@ describe GuOP do
     @guop = GuOP.new($VALID_API_KEY)
   end
 
-  describe "GET /search (filter by secion)" do
+  describe "GET /search (filter by section)" do
     context "calling a query with results from multiple sections" do
       before(:all) do
         @search_term = "webdriver"
