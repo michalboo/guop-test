@@ -17,6 +17,13 @@ class GuOP
     self.class.send(request_method, endpoint, opts)
   end
 
+  # Convenience method performing search
+  # Returning 'response' key of parsed response Hash
+  def search(querystring = "", query_params = {}, opts = {})
+    opts[:query] = query_params.merge({ q: querystring })
+    request(:get, "/search", opts).parsed_response["response"]
+  end
+
   def method_missing(method_name, *args, &block)
     if HTTParty.respond_to? method_name
       request(method_name, *args)
