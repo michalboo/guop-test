@@ -38,6 +38,20 @@ describe GuOP do
 
         expect(s1["response"]["results"]).not_to eq s2["response"]["results"]
       end
+
+      it "handles multi-word queries" do
+        resp = @guop.get("/search", query: { q: "prime minister" })
+        expect(resp.code).to eq 200
+        expect(resp.parsed_response["response"]["results"]).not_to be_empty
+      end
+
+      it "handles queries containing non-latin characters" do
+        ["Michał", "在西方 毛泽东", "Москва"].each do |example|
+          resp = @guop.get("/search", query: { q: example })
+          expect(resp.code).to eq 200
+          expect(resp.parsed_response["response"]["results"]).not_to be_empty
+        end
+      end
     end
   end
 end
