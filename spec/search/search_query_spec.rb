@@ -53,6 +53,12 @@ describe GuOP do
         end
       end
 
+      it "allows specifying multi-word phrases with double quotes" do
+        # specific article title
+        title = "Meaningless meetings and death by committee"
+        expect(@guop.search("\"#{title}\"")["total"]).to eq 1
+      end
+
       context "when combining search terms with logical operators" do
         before(:all) do
           @term_1 = "webdriver"

@@ -28,7 +28,7 @@ class GuOP
     if HTTParty.respond_to? method_name
       request(method_name, *args)
     else
-      raise NoMethodError("Undefined method #{method_name}")
+      raise(NoMethodError, "Undefined method '#{method_name}'")
     end
   end
 end
