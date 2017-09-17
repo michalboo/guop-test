@@ -9,8 +9,7 @@ describe GuOP do
     context "calling a query with results from multiple sections" do
       before(:all) do
         @search_term = "webdriver"
-        opts = { query: { q: @search_term } }
-        all_results = @guop.get("/search", opts).parsed_response["response"]["results"]
+        all_results = @guop.search(@search_term)["results"]
         @sections = all_results.collect {|r| r["sectionId"]}.uniq
 
         expect(@sections.length).to be > 1
@@ -19,9 +18,7 @@ describe GuOP do
       context "when called with a valid 'section' parameter" do
         it "only returns results belonging to the specified section" do
           section = @sections.sample
-          filter_ops = { query: { q: @search_term, section: section } }
-
-          results = @guop.get("/search", filter_ops).parsed_response["response"]["results"]
+          results = @guop.search(@search_term, section: section)["results"]
           result_sections = results.collect {|r| r["sectionId"]}.uniq
 
           expect(result_sections.length).to eq 1
@@ -32,9 +29,8 @@ describe GuOP do
       context "when called with a 'section' name prepended with a '-'" do
         it "excludes results belonging to the specified section" do
           section = @sections.sample
-          filter_ops = { query: { q: @search_term, section: "-#{section}" } }
 
-          results = @guop.get("/search", filter_ops).parsed_response["response"]["results"]
+          results = @guop.search(@search_term, section: "-#{section}")["results"]
           result_sections = results.collect {|r| r["sectionId"]}.uniq
 
           expect(result_sections).not_to include(section)
@@ -44,7 +40,7 @@ describe GuOP do
       context "when called with an nonexistent 'section' parameter" do
         it "returns an empty list of results" do
           filter_ops = { query: { q: @search_term, section: "fakesection" } }
-          results = @guop.get("/search", filter_ops).parsed_response["response"]["results"]
+          results = @guop.search(@search_term, section: "fakesection")["results"]
 
           expect(results.length).to eq 0
         end

@@ -1,11 +1,11 @@
-require_relative "spec_helper"
+require_relative "../spec_helper"
 
 describe GuOP do
   before(:all) do
     @guop = GuOP.new($VALID_API_KEY)
   end
 
-  describe "GET /search" do
+  describe "GET /search (serch queries)" do
     context "when called with no querystring parameter" do
       before(:all) do
         @response = @guop.get("/search")
@@ -33,10 +33,10 @@ describe GuOP do
 
     context "when called with a querystring parameter" do
       it "returns diffferent results for different queries" do
-        s1 = @guop.get("/search", query: { q: "plague" }).parsed_response
-        s2 = @guop.get("/search", query: { q: "cholera" }).parsed_response
+        s1 = @guop.search("plague")
+        s2 = @guop.search("cholera")
 
-        expect(s1["response"]["results"]).not_to eq s2["response"]["results"]
+        expect(s1["results"]).not_to eq s2["results"]
       end
 
       it "handles multi-word queries" do
@@ -50,6 +50,39 @@ describe GuOP do
           resp = @guop.get("/search", query: { q: example })
           expect(resp.code).to eq 200
           expect(resp.parsed_response["response"]["results"]).not_to be_empty
+        end
+      end
+
+      context "when combining search terms with logical operators" do
+        before(:all) do
+          @term_1 = "webdriver"
+          @term_2 = "Appelquist"
+
+          @search_1_total = @guop.search(@term_1)["total"]
+          @search_2_total = @guop.search(@term_2)["total"]
+        end
+
+        it "supports the OR operator" do
+          or_query = "#{@term_1} OR #{@term_2}"
+          or_search_total = @guop.search(or_query)["total"]
+
+          expect(or_search_total).to be > @search_1_total
+          expect(or_search_total).to be > @search_2_total
+        end
+
+        it "supports the AND operator" do
+          and_query = "#{@term_1} AND #{@term_2}"
+          and_search_total = @guop.search(and_query)["total"]
+
+          expect(and_search_total).to be < @search_1_total
+          expect(and_search_total).to be < @search_2_total
+        end
+
+        it "supports the NOT operator" do
+          and_total = @guop.search("#{@term_1} AND #{@term_2}")["total"]
+          not_total = @guop.search("#{@term_1} AND NOT #{@term_2}")["total"]
+
+          expect(not_total).to eq(@search_1_total - and_total)
         end
       end
     end

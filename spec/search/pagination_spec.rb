@@ -8,7 +8,7 @@ describe GuOP do
   describe "GET /search (pagination)" do
     context "when called with 'page-size' parameter" do
       it "returns the correct number of results per page" do
-        [ 0 ,1, 20, 200].each do |page_size_example|
+        [0 ,1, 20, 200].each do |page_size_example|
           opts = { query: { "page-size" => page_size_example } }
           res = @guop.get("/search", opts).parsed_response["response"]
 
@@ -26,15 +26,14 @@ describe GuOP do
 
     context "when called with 'page' parameter" do
       before(:all) do
-        @multi_page_res = @guop.get("/search", query: { q: "democracy" })
-        @total_pages = @multi_page_res.parsed_response["response"]["pages"]
+        @total_pages = @guop.search("democracy")["pages"]
         fail unless @total_pages > 2 # Test needs multiple pages of results
       end
 
       it "returns the specified result page" do
         [1, (2 + rand(@total_pages - 2)), @total_pages].each do |page_number|
-          res = @guop.get("/search", query: { q: "democracy", page: page_number })
-          expect(res.parsed_response["response"]["currentPage"]).to eq page_number
+          res = @guop.search("democracy", page: page_number)
+          expect(res["currentPage"]).to eq page_number
         end
       end
 
