@@ -6,24 +6,69 @@ describe GuOP do
   end
 
   describe "GET /search" do
-    context "when called with no query argument"
-    before(:all) do
-      @response = @guop.get("/search")
+    context "when called with no querystring parameter" do
+      before(:all) do
+        @response = @guop.get("/search")
+      end
+
+      it "returns a '200' response" do
+        expect(@response.code).to eq 200
+      end
+
+      it "returns valid JSON adhering to the 'search_result' schema" do
+        expect{ JSON.parse @response.body }.not_to raise_error
+        expect(@response.body).to match_schema("search_result")
+      end
+
+      it "returns a non-empty list of results" do
+        search_results = @response.parsed_response["response"]["results"]
+        expect(search_results).to be_instance_of Array
+        expect(search_results.length).to be > 0
+      end
+
+      it "returns information on the total number of search results" do
+        expect(@response.parsed_response["response"]["total"]).to be > 0
+      end
     end
 
-    it "returns a '200' response" do
-      expect(@response.code).to eq 200
+    context "when called with 'page-size' parameter" do
+      it "returns the correct number of results per page" do
+        [ 0 ,1, 20, 200].each do |page_size_example|
+          opts = { query: { "page-size" => page_size_example } }
+          res = @guop.get("/search", opts).parsed_response["response"]
+
+          expect(res["pageSize"]).to eq page_size_example
+          expect(res["results"].length).to eq page_size_example
+        end
+      end
+
+      it "returns a '400' error if page-size > 200" do
+        expect(
+          @guop.get("/search", query: { "page-size" => 201 }).code
+        ).to eq 400
+      end
     end
 
-    it "returns valid JSON adhering to the 'search_result' schema" do
-      expect{ JSON.parse @response.body }.not_to raise_error
-      expect(@response.body).to match_schema("search_result")
-    end
+    context "when called with 'page' parameter" do
+      before(:all) do
+        @multi_page_res = @guop.get("/search", query: { q: "democracy" })
+        @total_pages = @multi_page_res.parsed_response["response"]["pages"]
+        fail unless @total_pages > 2 # Test needs multiple pages of results
+      end
 
-    it "returns a non-empty list of results" do
-      search_results = @response.parsed_response["response"]["results"]
-      expect(search_results).to be_instance_of Array
-      expect(search_results.length).to be > 0
+      it "returns the specified result page" do
+        [1, (2 + rand(@total_pages - 2)), @total_pages].each do |page_number|
+          res = @guop.get("/search", query: { q: "democracy", page: page_number })
+          expect(res.parsed_response["response"]["currentPage"]).to eq page_number
+        end
+      end
+
+      it "returns a '400' error if 'page' parameter invalid" do
+        [0, @total_pages + 1, "thirteen"].each do |invalid_page|
+          res = @guop.get("/search", query: { q: "democracy", page: invalid_page })
+          expect(res.code).to eq 400
+        end
+      end
     end
   end
 end
