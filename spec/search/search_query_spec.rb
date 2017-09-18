@@ -54,9 +54,11 @@ describe GuOP do
       end
 
       it "allows specifying multi-word phrases with double quotes" do
-        # specific article title
-        title = "Meaningless meetings and death by committee"
-        expect(@guop.search("\"#{title}\"")["total"]).to eq 1
+        # phrase used in a specific article
+        # assumption that it will not be used in another one
+        phrase = "Dang! Napoleon Dynamite is sweet!"
+        expect(@guop.search(phrase)["total"]).to be > 1
+        expect(@guop.search("\"#{phrase}\"")["total"]).to eq 1
       end
 
       context "when combining search terms with logical operators" do
